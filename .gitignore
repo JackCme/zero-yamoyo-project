@@ -20,6 +20,7 @@ bin/
 .idea
 *.iws
 *.iml
+!zero-yamoyo.iml
 *.ipr
 out/
 !**/src/main/**/out/
@@ -34,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Docker volume ###
+docker/mysql/db/
