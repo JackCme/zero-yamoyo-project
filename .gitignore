@@ -38,3 +38,6 @@ out/
 
 ### Docker volume ###
 docker/mysql/db/
+
+### Jacoco html report ###
+htmlReport
