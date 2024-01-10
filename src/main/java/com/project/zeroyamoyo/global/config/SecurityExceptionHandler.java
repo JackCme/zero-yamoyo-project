@@ -16,7 +16,7 @@ public abstract class SecurityExceptionHandler {
                 .build();
         String jsonString = new ObjectMapper().writeValueAsString(responseWrapper);
 
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(resultType.getHttpStatus().value());
         response.getWriter().write(jsonString);
         response.flushBuffer();
