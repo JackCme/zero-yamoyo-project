@@ -2,12 +2,12 @@ package com.project.zeroyamoyo.domain.somoim.entity;
 
 import com.project.zeroyamoyo.domain.interest.entity.Interest;
 import com.project.zeroyamoyo.domain.user.entity.User;
+import com.project.zeroyamoyo.global.BaseTimeEntity;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
-public class Somoim {
+public class Somoim extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
