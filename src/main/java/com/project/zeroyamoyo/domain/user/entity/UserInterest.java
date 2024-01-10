@@ -14,12 +14,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class UserInterest {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
     private String interestCategory;
+    @Column(name = "interest_id")
     private Long interestId;
     @ManyToOne
-    @JoinColumn(name = "interest_id")
+    @JoinColumn(name = "interest_id", insertable = false, updatable = false)
     private Interest interest;
     @ManyToOne
     @JoinColumn(name = "user_id")
