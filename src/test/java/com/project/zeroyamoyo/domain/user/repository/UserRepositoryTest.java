@@ -27,7 +27,7 @@ class UserRepositoryTest {
                 .id(1L).email("jack@jack.com")
                 .password("PassW@rd!1")
                 .nickname("jack")
-                .region_code(1)
+                .regionCode(1)
                 .gender(Gender.MALE)
                 .description("this is a description")
                 .registeredAt(LocalDateTime.now())

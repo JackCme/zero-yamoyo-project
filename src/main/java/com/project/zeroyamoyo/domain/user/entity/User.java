@@ -1,9 +1,6 @@
 package com.project.zeroyamoyo.domain.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -68,6 +65,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @Generated
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
@@ -79,6 +77,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @Generated
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
