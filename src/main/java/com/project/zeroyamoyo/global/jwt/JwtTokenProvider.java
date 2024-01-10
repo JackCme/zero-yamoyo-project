@@ -59,6 +59,18 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
+    public String createToken(Long userId, String email) {
+        // 토큰의 expire 시간을 설정
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        return Jwts.builder()
+                .setId(userId.toString())
+                .setSubject(email)
+                .signWith(key, SignatureAlgorithm.HS256) // 사용할 암호화 알고리즘과 , signature 에 들어갈 secret값 세팅
+                .setExpiration(validity) // set Expire Time 해당 옵션 안넣으면 expire안함
+                .compact();
+    }
+
     // 토큰으로 클레임을 만들고 이를 이용해 유저 객체를 만들어서 최종적으로 authentication 객체를 리턴
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts

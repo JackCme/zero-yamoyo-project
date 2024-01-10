@@ -1,12 +1,15 @@
 package com.project.zeroyamoyo.domain.user.service;
 
+import com.project.zeroyamoyo.domain.user.api.model.TokenVO;
 import com.project.zeroyamoyo.domain.user.api.model.UserJoin;
+import com.project.zeroyamoyo.domain.user.api.model.UserLogin;
 import com.project.zeroyamoyo.domain.user.entity.User;
 import com.project.zeroyamoyo.domain.user.entity.UserInterest;
 import com.project.zeroyamoyo.domain.user.repository.UserInterestRepository;
 import com.project.zeroyamoyo.domain.user.repository.UserRepository;
 import com.project.zeroyamoyo.global.exception.GlobalException;
 import com.project.zeroyamoyo.global.exception.ResultType;
+import com.project.zeroyamoyo.global.jwt.JwtTokenProvider;
 import com.project.zeroyamoyo.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,12 +26,26 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserInterestRepository userInterestRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public void join(UserJoin.Request request) {
         validateUserJoinRequest(request);
         createUser(request);
+    }
+
+    public TokenVO login(UserLogin.Request request) {
+        User user = validateUserLoginRequest(request);
+        return new TokenVO(jwtTokenProvider.createToken(user.getId(), user.getEmail()));
+    }
+
+    private User validateUserLoginRequest(UserLogin.Request request) {
+        User user = userRepository.findUserByEmail(request.getEmail())
+                .orElseThrow(() -> new GlobalException(ResultType.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new GlobalException(ResultType.PASSWORD_NOT_MATCH);
+        }
+        return user;
     }
 
     private void createUser(UserJoin.Request request) {

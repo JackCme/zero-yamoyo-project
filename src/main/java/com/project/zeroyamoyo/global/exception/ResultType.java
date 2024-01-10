@@ -15,6 +15,8 @@ public enum ResultType {
     , EMAIL_NOT_VALID(HttpStatus.BAD_REQUEST,4000, "올바른 이메일 형식이 아닙니다")
     , PASSWORD_NOT_VALID(HttpStatus.BAD_REQUEST,4000, "비밀번호의 형식이 올바르지 않습니다")
     , USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,4000, "이미 사용자가 존재합니다")
+    , USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4040, "사용자를 찾을 수 없습니다")
+    , PASSWORD_NOT_MATCH(HttpStatus.FORBIDDEN, 4031, "비밀번호가 일치하지 않습니다")
     ;
     private final HttpStatus httpStatus;
     private final int statusCode;
