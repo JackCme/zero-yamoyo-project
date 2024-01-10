@@ -16,8 +16,9 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
-    @ExceptionHandler({GlobalException.class})
+    @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ResponseWrapper<Object>> handleException(Exception e) {
+        log.error(e.getMessage(), e);
         if (e instanceof GlobalException) {
             ResultType resultType = ((GlobalException) e).getResultType();
             return new ResponseEntity<>(
