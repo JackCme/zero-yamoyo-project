@@ -19,8 +19,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    public ResponseWrapper<UserJoin.Response> join(@RequestBody @Valid UserJoin.Request request) {
-        return null;
+    public ResponseWrapper<Object> join(@RequestBody @Valid UserJoin.Request request) {
+        userService.join(request);
+        return ResponseWrapper.builder().build();
     }
 
     @PostMapping("/login")

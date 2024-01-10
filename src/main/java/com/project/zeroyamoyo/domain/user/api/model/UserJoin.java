@@ -3,11 +3,15 @@ package com.project.zeroyamoyo.domain.user.api.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.project.zeroyamoyo.domain.user.entity.Gender;
+import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserJoin {
+    @Getter
     public static class Request {
         @NotBlank
         private String email;
@@ -19,10 +23,14 @@ public class UserJoin {
         private Gender gender;
         private Integer regionCode;
         private String description;
-    }
+        @NotEmpty
+        private List<Interest> interests;
 
-    public static class Response {
-        private Long userId;
-        private String email;
+        @Getter
+        public static class Interest {
+            private Integer id;
+            private List<String> category;
+        }
+
     }
 }
