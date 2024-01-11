@@ -3,6 +3,7 @@ package com.project.zeroyamoyo.domain.interest.entity;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,5 +15,5 @@ public class Interest {
     private String name;
     @OneToMany
     @JoinColumn(name = "interest_id")
-    private List<InterestCategory> interestCategoryList;
+    private List<InterestCategory> interestCategoryList = new ArrayList<>();
 }

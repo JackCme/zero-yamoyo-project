@@ -1,6 +1,7 @@
 package com.project.zeroyamoyo.domain.somoim.api;
 
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
+import com.project.zeroyamoyo.domain.somoim.api.model.SomoimGet;
 import com.project.zeroyamoyo.domain.somoim.service.SomoimService;
 import com.project.zeroyamoyo.global.response.ResponseWrapper;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ public class SomoimController {
                 .content(somoimService.create(request))
                 .build();
     }
-
     @GetMapping("/{somoimId}")
-    public ResponseWrapper<Object> get(@PathVariable("somoimId") Long somoimId) {
-        return null;
+    public ResponseWrapper<SomoimGet.Response> get(@PathVariable("somoimId") Long somoimId) {
+        return ResponseWrapper.<SomoimGet.Response>builder()
+                .content(somoimService.getSomoim(somoimId))
+                .build();
     }
-
     @PatchMapping("/{somoimId}")
     public ResponseWrapper<Object> modify(@PathVariable("somoimId") Long somoimId) {
         return null;

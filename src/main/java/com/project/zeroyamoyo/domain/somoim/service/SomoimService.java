@@ -3,6 +3,7 @@ package com.project.zeroyamoyo.domain.somoim.service;
 import com.project.zeroyamoyo.domain.interest.entity.Interest;
 import com.project.zeroyamoyo.domain.interest.repository.InterestRepository;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
+import com.project.zeroyamoyo.domain.somoim.api.model.SomoimGet;
 import com.project.zeroyamoyo.domain.somoim.entity.MemberRole;
 import com.project.zeroyamoyo.domain.somoim.entity.Somoim;
 import com.project.zeroyamoyo.domain.somoim.entity.SomoimInterest;
@@ -64,5 +65,11 @@ public class SomoimService {
         );
 
         return savedSomoim;
+    }
+
+    public SomoimGet.Response getSomoim(Long somoimId) {
+        Somoim somoim = somoimRepository.findById(somoimId)
+                .orElseThrow(() -> new GlobalException(ResultType.SOMOIM_NOT_FOUND));
+        return new SomoimGet.Response(somoim);
     }
 }
