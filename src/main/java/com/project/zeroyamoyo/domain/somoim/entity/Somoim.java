@@ -15,11 +15,6 @@ public class Somoim extends BaseTimeEntity {
     private Integer regionCode;
     private String description;
     private Integer limit;
-    @Column(name = "interest_id")
-    private Long interestId;
-    @ManyToOne
-    @JoinColumn(name = "interest_id", insertable = false, updatable = false)
-    private Interest interest;
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
