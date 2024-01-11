@@ -1,18 +1,22 @@
 package com.project.zeroyamoyo.domain.somoim.api;
 
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
+import com.project.zeroyamoyo.domain.somoim.service.SomoimService;
 import com.project.zeroyamoyo.global.response.ResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/somoim")
+@RequiredArgsConstructor
 public class SomoimController {
-
+    private final SomoimService somoimService;
     @PostMapping("/")
     public ResponseWrapper<Object> create(@RequestBody @Valid SomoimCreate.Request request) {
-        return null;
+        return ResponseWrapper.builder()
+                .content(somoimService.create(request)).build();
     }
 
     @GetMapping("/{somoimId}")
