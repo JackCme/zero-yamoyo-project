@@ -14,9 +14,10 @@ import javax.validation.Valid;
 public class SomoimController {
     private final SomoimService somoimService;
     @PostMapping("/")
-    public ResponseWrapper<Object> create(@RequestBody @Valid SomoimCreate.Request request) {
-        return ResponseWrapper.builder()
-                .content(somoimService.create(request)).build();
+    public ResponseWrapper<SomoimCreate.Response> create(@RequestBody @Valid SomoimCreate.Request request) {
+        return ResponseWrapper.<SomoimCreate.Response>builder()
+                .content(somoimService.create(request))
+                .build();
     }
 
     @GetMapping("/{somoimId}")

@@ -31,7 +31,8 @@ public class SomoimService {
 
     @Transactional
     public SomoimCreate.Response create(SomoimCreate.Request request) {
-        return SomoimCreate.Response.fromEntity(createNewSomoim(request));
+        Somoim newSomoim = createNewSomoim(request);
+        return new SomoimCreate.Response(newSomoim);
     }
 
     private Somoim createNewSomoim(SomoimCreate.Request request) {

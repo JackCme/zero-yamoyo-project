@@ -18,7 +18,6 @@ import java.util.List;
 public class GlobalExceptionAdvice {
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ResponseWrapper<Object>> handleException(Exception e) {
-        log.error(e.getMessage(), e);
         if (e instanceof GlobalException) {
             ResultType resultType = ((GlobalException) e).getResultType();
             return new ResponseEntity<>(
@@ -29,6 +28,7 @@ public class GlobalExceptionAdvice {
             );
         }
 
+        log.error(e.getMessage(), e);
         return new ResponseEntity<>(
             ResponseWrapper.builder()
                     .result(Result.from(ResultType.INTERNAL_SERVER_ERROR))
