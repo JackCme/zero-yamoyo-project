@@ -10,6 +10,12 @@ spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        auto_quote_keyword: true
+        format_sql: true
 jwt:
   header: Authorization
   secret: 391e72d4d0433ee300b9ba5c6ab11ceed1c8f7ed5bc89b41725409b777598f5a
