@@ -23,19 +23,13 @@ import org.springframework.context.annotation.Profile;
                 title = "야모여 Backend API",
                 description = "야모여 프로젝트 백엔드 API 명세서",
                 version = "0.0.0"
-        ),
-        tags = {
-                @Tag(name = "User", description = "사용자 인증 관련 API"),
-                @Tag(name = "Somoim", description = "소모임 관련 API"),
-        }
+        )
 )
 @Configuration
 public class SwaggerConfig {
     private static final String BEARER_TOKEN_PREFIX = "Bearer";
 
     @Bean
-    // 운영 환경에는 Swagger를 비활성화하기 위해 추가했습니다.
-    @Profile("!Prod")
     public OpenAPI openAPI() {
         String jwtSchemeName = JwtFilter.AUTHORIZATION_HEADER;
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);

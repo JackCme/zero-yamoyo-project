@@ -6,6 +6,7 @@ import com.project.zeroyamoyo.domain.somoim.api.model.SomoimInterestModify;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimModify;
 import com.project.zeroyamoyo.domain.somoim.service.SomoimService;
 import com.project.zeroyamoyo.global.response.ResponseWrapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/somoim")
 @RequiredArgsConstructor
+@Tag(name = "Somoim", description = "소모임 관련 API")
 public class SomoimController {
     private final SomoimService somoimService;
 
