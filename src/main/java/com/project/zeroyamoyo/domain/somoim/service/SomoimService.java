@@ -4,6 +4,7 @@ import com.project.zeroyamoyo.domain.interest.entity.Interest;
 import com.project.zeroyamoyo.domain.interest.repository.InterestRepository;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimGet;
+import com.project.zeroyamoyo.domain.somoim.api.model.SomoimModify;
 import com.project.zeroyamoyo.domain.somoim.entity.MemberRole;
 import com.project.zeroyamoyo.domain.somoim.entity.Somoim;
 import com.project.zeroyamoyo.domain.somoim.entity.SomoimInterest;
@@ -68,8 +69,32 @@ public class SomoimService {
     }
 
     public SomoimGet.Response getSomoim(Long somoimId) {
-        Somoim somoim = somoimRepository.findById(somoimId)
-                .orElseThrow(() -> new GlobalException(ResultType.SOMOIM_NOT_FOUND));
+        Somoim somoim = findSomoim(somoimId);
         return new SomoimGet.Response(somoim);
+    }
+
+    private Somoim findSomoim(Long somoimId) {
+        return somoimRepository.findById(somoimId)
+                .orElseThrow(() -> new GlobalException(ResultType.SOMOIM_NOT_FOUND));
+    }
+
+    @Transactional
+    public SomoimModify.Response modifySomoim(Long somoimId, SomoimModify.Request request) {
+        Somoim somoim = findSomoim(somoimId);
+        checkIsUserOwnerOfSomoim(somoim);
+        Somoim updatedSomoim = somoimRepository.save(
+                somoim.updatedSomoim(request.getName(), request.getRegionCode(), request.getDescription(), request.getLimit())
+        );
+        return new SomoimModify.Response(updatedSomoim);
+    }
+
+    private void checkIsUserOwnerOfSomoim(Somoim somoim) {
+        User user = (User) auth.getAuthentication().getPrincipal();
+        SomoimMember somoimMember = somoimMemberRepository.findBySomoimAndUser(somoim, user)
+                .orElseThrow(() -> new GlobalException(ResultType.ACCESS_DENIED));
+
+        if (somoimMember.getRole() != MemberRole.OWNER) {
+            throw new GlobalException(ResultType.ACCESS_DENIED);
+        }
     }
 }

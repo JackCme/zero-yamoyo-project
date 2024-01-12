@@ -37,4 +37,13 @@ public class Somoim extends BaseTimeEntity {
         this.limit = limit;
         this.creator = creator;
     }
+
+    public Somoim updatedSomoim(String name, Integer regionCode, String description, Integer limit) {
+        this.name = name;
+        this.regionCode = regionCode;
+        this.description = description;
+        this.limit = limit;
+
+        return this;
+    }
 }
