@@ -1,6 +1,7 @@
 package com.project.zeroyamoyo.domain.somoim.entity;
 
 import com.project.zeroyamoyo.domain.interest.entity.Interest;
+import com.project.zeroyamoyo.global.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "somoim_interest")
 @Getter
 @NoArgsConstructor
-public class SomoimInterest {
+public class SomoimInterest extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;

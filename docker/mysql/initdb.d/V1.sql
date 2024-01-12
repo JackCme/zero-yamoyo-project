@@ -39,6 +39,8 @@ CREATE TABLE `somoim_interest` (
                                    `somoim_id` int DEFAULT NULL,
                                    `interest_id` int DEFAULT NULL,
                                    `interest_category` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                   `created_date` datetime DEFAULT NULL,
+                                   `modified_date` datetime DEFAULT NULL,
                                    PRIMARY KEY (`seq`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
