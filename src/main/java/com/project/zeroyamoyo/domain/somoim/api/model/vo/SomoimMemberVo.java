@@ -1,5 +1,7 @@
 package com.project.zeroyamoyo.domain.somoim.api.model.vo;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.project.zeroyamoyo.domain.somoim.entity.MemberRole;
 import com.project.zeroyamoyo.domain.somoim.entity.SomoimMember;
 import com.project.zeroyamoyo.domain.user.entity.Gender;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SomoimMemberVo {
     private Long id;
     private MemberRole role;

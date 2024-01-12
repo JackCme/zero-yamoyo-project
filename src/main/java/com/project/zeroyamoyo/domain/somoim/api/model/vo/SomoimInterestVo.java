@@ -1,5 +1,7 @@
 package com.project.zeroyamoyo.domain.somoim.api.model.vo;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.project.zeroyamoyo.domain.somoim.entity.SomoimInterest;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SomoimInterestVo {
     private Long interestId;
     private String interestName;
