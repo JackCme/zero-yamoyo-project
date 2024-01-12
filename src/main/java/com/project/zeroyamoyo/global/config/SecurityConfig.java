@@ -46,6 +46,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(matcher ->
                         matcher.antMatchers(HttpMethod.POST, "/user/login", "/user/join").permitAll()
+                                .antMatchers(AuthenticatedMatchers.swaggerArray).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
