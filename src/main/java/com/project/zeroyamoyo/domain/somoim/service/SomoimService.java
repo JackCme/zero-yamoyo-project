@@ -4,6 +4,7 @@ import com.project.zeroyamoyo.domain.interest.entity.Interest;
 import com.project.zeroyamoyo.domain.interest.repository.InterestRepository;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimGet;
+import com.project.zeroyamoyo.domain.somoim.api.model.SomoimInterestModify;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimModify;
 import com.project.zeroyamoyo.domain.somoim.entity.MemberRole;
 import com.project.zeroyamoyo.domain.somoim.entity.Somoim;
@@ -39,8 +40,7 @@ public class SomoimService {
 
     private Somoim createNewSomoim(SomoimCreate.Request request) {
         User user = (User) auth.getAuthentication().getPrincipal();
-        Interest interest = interestRepository.findById(request.getInterestId().longValue())
-                .orElseThrow(() -> new GlobalException(ResultType.INVALID_REQUEST_PARAMETER));
+        Interest interest = findInterest(request.getInterestId().longValue());
 
         Somoim savedSomoim = somoimRepository.save(Somoim.builder()
                 .name(request.getName())
@@ -66,6 +66,11 @@ public class SomoimService {
         );
 
         return savedSomoim;
+    }
+
+    private Interest findInterest(Long interestId) {
+        return interestRepository.findById(interestId)
+                .orElseThrow(() -> new GlobalException(ResultType.INVALID_REQUEST_PARAMETER));
     }
 
     public SomoimGet.Response getSomoim(Long somoimId) {
@@ -96,5 +101,19 @@ public class SomoimService {
         if (somoimMember.getRole() != MemberRole.OWNER) {
             throw new GlobalException(ResultType.ACCESS_DENIED);
         }
+    }
+
+    @Transactional
+    public SomoimInterestModify.Response modifySomoimInterest(Long somoimId, SomoimInterestModify.Request request) {
+        Somoim somoim = findSomoim(somoimId);
+        Interest interest = findInterest(request.getInterestId().longValue());
+        checkIsUserOwnerOfSomoim(somoim);
+
+        SomoimInterest somoimInterest = somoim.getSomoimInterest();
+        SomoimInterest updatedSomoimInterest = somoimInterestRepository.saveAndFlush(
+                somoimInterest.updatedSomoimInterest(interest, String.join(",", request.getCategory()))
+        );
+
+        return new SomoimInterestModify.Response(updatedSomoimInterest);
     }
 }

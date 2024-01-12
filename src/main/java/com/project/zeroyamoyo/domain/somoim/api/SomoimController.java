@@ -2,6 +2,7 @@ package com.project.zeroyamoyo.domain.somoim.api;
 
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimCreate;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimGet;
+import com.project.zeroyamoyo.domain.somoim.api.model.SomoimInterestModify;
 import com.project.zeroyamoyo.domain.somoim.api.model.SomoimModify;
 import com.project.zeroyamoyo.domain.somoim.service.SomoimService;
 import com.project.zeroyamoyo.global.response.ResponseWrapper;
@@ -15,22 +16,32 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class SomoimController {
     private final SomoimService somoimService;
+
     @PostMapping("/")
     public ResponseWrapper<SomoimCreate.Response> create(@RequestBody @Valid SomoimCreate.Request request) {
         return ResponseWrapper.<SomoimCreate.Response>builder()
                 .content(somoimService.create(request))
                 .build();
     }
+
     @GetMapping("/{somoimId}")
     public ResponseWrapper<SomoimGet.Response> get(@PathVariable("somoimId") Long somoimId) {
         return ResponseWrapper.<SomoimGet.Response>builder()
                 .content(somoimService.getSomoim(somoimId))
                 .build();
     }
+
     @PatchMapping("/{somoimId}")
     public ResponseWrapper<SomoimModify.Response> modify(@PathVariable("somoimId") Long somoimId, @RequestBody @Valid SomoimModify.Request request) {
         return ResponseWrapper.<SomoimModify.Response>builder()
                 .content(somoimService.modifySomoim(somoimId, request))
+                .build();
+    }
+
+    @PatchMapping("/{somoimId}/interest")
+    public ResponseWrapper<SomoimInterestModify.Response> modifySomoimInterest(@PathVariable("somoimId") Long somoimId, @RequestBody @Valid SomoimInterestModify.Request request) {
+        return ResponseWrapper.<SomoimInterestModify.Response>builder()
+                .content(somoimService.modifySomoimInterest(somoimId, request))
                 .build();
     }
 

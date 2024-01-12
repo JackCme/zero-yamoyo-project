@@ -30,4 +30,10 @@ public class SomoimInterest extends BaseTimeEntity {
         this.interest = interest;
         this.somoim = somoim;
     }
+
+    public SomoimInterest updatedSomoimInterest(Interest interest, String category) {
+        this.interest = interest;
+        this.interestCategory = category;
+        return this;
+    }
 }
