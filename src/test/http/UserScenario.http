@@ -1,0 +1,25 @@
+### 회원가입
+POST http://localhost:8080/user/join
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "aStr0ngP@ssword1!",
+  "nickname": "John Doe",
+  "gender": "MALE",
+  "region_code": 1,
+  "description": "This is my description",
+  "interests": [
+    { "id": 0, "category": ["배구","볼링"] }
+  ]
+}
+
+### 로그인
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "aStr0ngP@ssword1!"
+}
+> {% client.global.set("BearerToken", response.body.content.token); %}

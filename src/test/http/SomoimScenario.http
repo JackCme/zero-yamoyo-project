@@ -1,0 +1,46 @@
+### 소모임 만들기
+POST http://localhost:8080/somoim/
+Authorization: Bearer {{BearerToken}}
+Content-Type: application/json
+
+{
+  "name": "내 소모임",
+  "region_code": 1,
+  "description": "소모임 입니다",
+  "limit": 300,
+  "interest_id": 1
+}
+> {% client.global.set("somoimId", response.body.content.somoim_id) %}
+
+### 소모임 조회
+GET http://localhost:8080/somoim/{{somoimId}}
+Authorization: Bearer {{BearerToken}}
+Content-Type: application/json
+
+### 소모임 정보수정
+PATCH http://localhost:8080/somoim/{{somoimId}}
+Authorization: Bearer {{BearerToken}}
+Content-Type: application/json
+
+{
+  "name": "소모임{{somoimId}} 정보수정",
+  "region_code": 3,
+  "description": "소모임{{somoimId}} 정보수정되었습니다.",
+  "limit": 300
+}
+
+### 소모임 관심사수정
+PATCH http://localhost:8080/somoim/{{somoimId}}/interest
+Authorization: Bearer {{BearerToken}}
+Content-Type: application/json
+
+{
+  "interest_id": 3,
+  "category": [
+    "등산", "독서"
+  ]
+}
+
+### 소모임 목록조회
+GET http://localhost:8080/somoim/list
+Authorization: Bearer {{BearerToken}}
