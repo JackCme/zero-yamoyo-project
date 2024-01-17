@@ -23,3 +23,29 @@ Content-Type: application/json
   "password": "aStr0ngP@ssword1!"
 }
 > {% client.global.set("BearerToken", response.body.content.token); %}
+
+### 회원가입 2
+POST http://localhost:8080/user/join
+Content-Type: application/json
+
+{
+  "email": "jack@example.com",
+  "password": "aStr0ngP@ssword1!",
+  "nickname": "최원준",
+  "gender": "MALE",
+  "region_code": 1,
+  "description": "This is my description",
+  "interests": [
+    { "id": 0, "category": ["배구","볼링"] }
+  ]
+}
+
+### 로그인 2
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+  "email": "jack@example.com",
+  "password": "aStr0ngP@ssword1!"
+}
+> {% client.global.set("BearerToken", response.body.content.token); %}

@@ -44,3 +44,15 @@ Content-Type: application/json
 ### 소모임 목록조회
 GET http://localhost:8080/somoim/list
 Authorization: Bearer {{BearerToken}}
+
+### 소모임 가입신청
+POST http://localhost:8080/somoim/2/apply
+Authorization: Bearer {{BearerToken}}
+
+### 소모임 가입 승인
+POST http://localhost:8080/somoim/2/accept/2
+Authorization: Bearer {{BearerToken}}
+
+### 소모임 가입 거절
+POST http://localhost:8080/somoim/{{somoimId}}/decline/2
+Authorization: Bearer {{BearerToken}}
