@@ -41,6 +41,66 @@ public class SomoimService {
         return new SomoimCreate.Response(newSomoim);
     }
 
+    public SomoimGet.Response getSomoim(Long somoimId) {
+        Somoim somoim = findSomoim(somoimId);
+        return new SomoimGet.Response(somoim);
+    }
+
+    @Transactional
+    public SomoimModify.Response modifySomoim(Long somoimId, SomoimModify.Request request) {
+        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
+        Somoim updatedSomoim = somoimRepository.saveAndFlush(
+                somoim.updatedSomoim(request.getName(), request.getRegionCode(), request.getDescription(), request.getLimit())
+        );
+        return new SomoimModify.Response(updatedSomoim);
+    }
+
+    @Transactional
+    public SomoimInterestModify.Response modifySomoimInterest(Long somoimId, SomoimInterestModify.Request request) {
+        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
+        Interest interest = findInterest(request.getInterestId().longValue());
+
+        SomoimInterest somoimInterest = somoim.getSomoimInterest();
+        SomoimInterest updatedSomoimInterest = somoimInterestRepository.saveAndFlush(
+                somoimInterest.updatedSomoimInterest(interest, String.join(",", request.getCategory()))
+        );
+
+        return new SomoimInterestModify.Response(updatedSomoimInterest);
+    }
+
+    public CursorResult<SomoimGetList.Response> getSomoimList(Long cursorId, Pageable page) {
+        List<Somoim> somoimList = Optional.ofNullable(cursorId)
+                .map(id -> this.somoimRepository.findByIdLessThanOrderByIdDesc(id, page))
+                .orElseGet(() -> this.somoimRepository.findAllByOrderByIdDesc(page));
+        Long lastIdOfList = Optional.of(somoimList.get(somoimList.size() - 1))
+                .map(Somoim::getId)
+                .orElse(null);
+        List<SomoimGetList.Response> collect = somoimList.stream()
+                .map(SomoimGetList.Response::new)
+                .collect(Collectors.toList());
+        return new CursorResult<>(collect, hasNext(lastIdOfList));
+    }
+
+    @Transactional
+    public void applyToSomoim(Long somoimId) {
+        Somoim somoim = findSomoim(somoimId);
+        User user = (User) auth.getAuthentication().getPrincipal();
+        validateSomoimApply(user, somoim);
+        somoimMemberRepository.save(SomoimMember.newTempMember(user, somoim));
+    }
+
+    @Transactional
+    public void acceptMember(Long somoimId, Long userId) {
+        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
+        applyingMember.acceptMember();
+    }
+
+    @Transactional
+    public void declineMember(Long somoimId, Long userId) {
+        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
+        somoimMemberRepository.delete(applyingMember);
+    }
+
     private Somoim createNewSomoim(SomoimCreate.Request request) {
         User user = (User) auth.getAuthentication().getPrincipal();
         Interest interest = findInterest(request.getInterestId().longValue());
@@ -76,23 +136,9 @@ public class SomoimService {
                 .orElseThrow(() -> new GlobalException(ResultType.INVALID_REQUEST_PARAMETER));
     }
 
-    public SomoimGet.Response getSomoim(Long somoimId) {
-        Somoim somoim = findSomoim(somoimId);
-        return new SomoimGet.Response(somoim);
-    }
-
     private Somoim findSomoim(Long somoimId) {
         return somoimRepository.findById(somoimId)
                 .orElseThrow(() -> new GlobalException(ResultType.SOMOIM_NOT_FOUND));
-    }
-
-    @Transactional
-    public SomoimModify.Response modifySomoim(Long somoimId, SomoimModify.Request request) {
-        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
-        Somoim updatedSomoim = somoimRepository.saveAndFlush(
-                somoim.updatedSomoim(request.getName(), request.getRegionCode(), request.getDescription(), request.getLimit())
-        );
-        return new SomoimModify.Response(updatedSomoim);
     }
 
     private Somoim checkCurrentUserIsOwnerOfSomoim(Long somoimId) {
@@ -108,44 +154,10 @@ public class SomoimService {
         return somoim;
     }
 
-    @Transactional
-    public SomoimInterestModify.Response modifySomoimInterest(Long somoimId, SomoimInterestModify.Request request) {
-        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
-        Interest interest = findInterest(request.getInterestId().longValue());
-
-        SomoimInterest somoimInterest = somoim.getSomoimInterest();
-        SomoimInterest updatedSomoimInterest = somoimInterestRepository.saveAndFlush(
-                somoimInterest.updatedSomoimInterest(interest, String.join(",", request.getCategory()))
-        );
-
-        return new SomoimInterestModify.Response(updatedSomoimInterest);
-    }
-
-    public CursorResult<SomoimGetList.Response> getSomoimList(Long cursorId, Pageable page) {
-        List<Somoim> somoimList = Optional.ofNullable(cursorId)
-                .map(id -> this.somoimRepository.findByIdLessThanOrderByIdDesc(id, page))
-                .orElseGet(() -> this.somoimRepository.findAllByOrderByIdDesc(page));
-        Long lastIdOfList = Optional.of(somoimList.get(somoimList.size() - 1))
-                .map(Somoim::getId)
-                .orElse(null);
-        List<SomoimGetList.Response> collect = somoimList.stream()
-                .map(SomoimGetList.Response::new)
-                .collect(Collectors.toList());
-        return new CursorResult<>(collect, hasNext(lastIdOfList));
-    }
-
     private Boolean hasNext(Long id) {
         return Optional.ofNullable(id)
                 .map(this.somoimRepository::existsByIdLessThan)
                 .orElse(false);
-    }
-
-    @Transactional
-    public void applyToSomoim(Long somoimId) {
-        Somoim somoim = findSomoim(somoimId);
-        User user = (User) auth.getAuthentication().getPrincipal();
-        validateSomoimApply(user, somoim);
-        somoimMemberRepository.save(SomoimMember.newTempMember(user, somoim));
     }
 
     private void validateSomoimApply(User user, Somoim somoim) {
@@ -153,18 +165,6 @@ public class SomoimService {
         somoimMemberRepository.findBySomoimAndUser(somoim, user).ifPresent(somoimMember -> {
             throw new GlobalException(ResultType.MEMBER_ALREADY_EXISTS);
         });
-    }
-
-    @Transactional
-    public void acceptMember(Long somoimId, Long userId) {
-        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
-        applyingMember.acceptMember();
-    }
-
-    @Transactional
-    public void declineMember(Long somoimId, Long userId) {
-        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
-        somoimMemberRepository.delete(applyingMember);
     }
 
     private SomoimMember findApplyingMember(Long somoimId, Long userId) {
