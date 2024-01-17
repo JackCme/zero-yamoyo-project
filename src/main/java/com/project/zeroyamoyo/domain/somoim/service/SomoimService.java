@@ -58,14 +58,14 @@ public class SomoimService {
     @Transactional
     public SomoimInterestModify.Response modifySomoimInterest(Long somoimId, SomoimInterestModify.Request request) {
         Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
-        Interest interest = findInterest(request.getInterestId().longValue());
+        SomoimInterest currentSomoimInterest = somoim.getSomoimInterest();
+        Interest requestedInterest = findInterest(request.getInterestId().longValue());
 
-        SomoimInterest somoimInterest = somoim.getSomoimInterest();
-        SomoimInterest updatedSomoimInterest = somoimInterestRepository.saveAndFlush(
-                somoimInterest.updatedSomoimInterest(interest, String.join(",", request.getCategory()))
-        );
+        validateInterestCategory(request.getCategory(), requestedInterest.getInterestCategoryList());
 
-        return new SomoimInterestModify.Response(updatedSomoimInterest);
+        return new SomoimInterestModify.Response(somoimInterestRepository.saveAndFlush(
+                currentSomoimInterest.updatedSomoimInterest(requestedInterest, String.join(",", request.getCategory()))
+        ));
     }
 
     public CursorResult<SomoimGetList.Response> getSomoimList(Long cursorId, Pageable page) {
@@ -175,5 +175,14 @@ public class SomoimService {
             throw new GlobalException(ResultType.NOT_TEMP_MEMBER);
         }
         return somoimMember;
+    }
+
+    private void validateInterestCategory(List<String> categoryList, List<InterestCategory> requestedInterestCategories) {
+        boolean isValidCategory = categoryList
+                .stream()
+                .allMatch(category -> requestedInterestCategories.stream().anyMatch(interestCategory -> category.equals(interestCategory.getName())));
+        if (!isValidCategory) {
+            throw new GlobalException(ResultType.INVALID_INTEREST_CATEGORY);
+        }
     }
 }

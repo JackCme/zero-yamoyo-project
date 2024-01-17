@@ -17,6 +17,7 @@ public enum ResultType {
     , USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,4000, "이미 사용자가 존재합니다")
     , MEMBER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,4000, "이미 소모임 멤버가 존재합니다")
     , NOT_TEMP_MEMBER(HttpStatus.BAD_REQUEST,4000, "가입 신청이 존재하지 않습니다")
+    , INVALID_INTEREST_CATEGORY(HttpStatus.BAD_REQUEST,4000, "올바른 관심사 세부 카테고리가 아닙니다")
     , USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4040, "사용자를 찾을 수 없습니다")
     , MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 4040, "소모임 멤버를 찾을 수 없습니다")
     , SOMOIM_NOT_FOUND(HttpStatus.NOT_FOUND, 4041, "존재하지 않는 소모임입니다")

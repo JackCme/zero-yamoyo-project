@@ -37,7 +37,7 @@ Content-Type: application/json
 {
   "interest_id": 3,
   "category": [
-    "등산", "독서"
+    "인문학", "심리학"
   ]
 }
 
