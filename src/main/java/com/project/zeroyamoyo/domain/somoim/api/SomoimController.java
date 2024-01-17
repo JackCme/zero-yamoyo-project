@@ -48,8 +48,10 @@ public class SomoimController {
     }
 
     @GetMapping("/list")
-    public ResponseWrapper<Object> getList() {
-        return null;
+    public ResponseWrapper<CursorResult<SomoimGetList.Response>> getList(@ParameterObject @ModelAttribute @Valid SomoimGetList.Request request) {
+        return ResponseWrapper.<CursorResult<SomoimGetList.Response>>builder()
+                .content(somoimService.getSomoimList(request.getCursorId(), PageRequest.of(0, request.getSize())))
+                .build();
     }
 
     @PostMapping("/apply/{somoimId}")
