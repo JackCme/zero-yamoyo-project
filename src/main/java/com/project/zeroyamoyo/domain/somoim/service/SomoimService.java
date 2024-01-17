@@ -11,6 +11,7 @@ import com.project.zeroyamoyo.domain.somoim.repository.SomoimInterestRepository;
 import com.project.zeroyamoyo.domain.somoim.repository.SomoimMemberRepository;
 import com.project.zeroyamoyo.domain.somoim.repository.SomoimRepository;
 import com.project.zeroyamoyo.domain.user.entity.User;
+import com.project.zeroyamoyo.domain.user.repository.UserRepository;
 import com.project.zeroyamoyo.global.auth.AuthenticationFacade;
 import com.project.zeroyamoyo.global.exception.GlobalException;
 import com.project.zeroyamoyo.global.exception.ResultType;
@@ -32,6 +33,7 @@ public class SomoimService {
     private final SomoimInterestRepository somoimInterestRepository;
     private final SomoimMemberRepository somoimMemberRepository;
     private final InterestRepository interestRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public SomoimCreate.Response create(SomoimCreate.Request request) {
@@ -86,29 +88,30 @@ public class SomoimService {
 
     @Transactional
     public SomoimModify.Response modifySomoim(Long somoimId, SomoimModify.Request request) {
-        Somoim somoim = findSomoim(somoimId);
-        checkIsUserOwnerOfSomoim(somoim);
+        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
         Somoim updatedSomoim = somoimRepository.saveAndFlush(
                 somoim.updatedSomoim(request.getName(), request.getRegionCode(), request.getDescription(), request.getLimit())
         );
         return new SomoimModify.Response(updatedSomoim);
     }
 
-    private void checkIsUserOwnerOfSomoim(Somoim somoim) {
+    private Somoim checkCurrentUserIsOwnerOfSomoim(Long somoimId) {
         User user = (User) auth.getAuthentication().getPrincipal();
+        Somoim somoim = findSomoim(somoimId);
         SomoimMember somoimMember = somoimMemberRepository.findBySomoimAndUser(somoim, user)
                 .orElseThrow(() -> new GlobalException(ResultType.ACCESS_DENIED));
 
-        if (somoimMember.getRole() != MemberRole.OWNER) {
+        if (!MemberRole.OWNER.equals(somoimMember.getRole())) {
             throw new GlobalException(ResultType.ACCESS_DENIED);
         }
+
+        return somoim;
     }
 
     @Transactional
     public SomoimInterestModify.Response modifySomoimInterest(Long somoimId, SomoimInterestModify.Request request) {
-        Somoim somoim = findSomoim(somoimId);
+        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
         Interest interest = findInterest(request.getInterestId().longValue());
-        checkIsUserOwnerOfSomoim(somoim);
 
         SomoimInterest somoimInterest = somoim.getSomoimInterest();
         SomoimInterest updatedSomoimInterest = somoimInterestRepository.saveAndFlush(
@@ -135,5 +138,42 @@ public class SomoimService {
         return Optional.ofNullable(id)
                 .map(this.somoimRepository::existsByIdLessThan)
                 .orElse(false);
+    }
+
+    @Transactional
+    public void applyToSomoim(Long somoimId) {
+        Somoim somoim = findSomoim(somoimId);
+        User user = (User) auth.getAuthentication().getPrincipal();
+        validateSomoimApply(user, somoim);
+        somoimMemberRepository.save(SomoimMember.newTempMember(user, somoim));
+    }
+
+    private void validateSomoimApply(User user, Somoim somoim) {
+        // 이미 존재하면 Error
+        somoimMemberRepository.findBySomoimAndUser(somoim, user).ifPresent(somoimMember -> {
+            throw new GlobalException(ResultType.MEMBER_ALREADY_EXISTS);
+        });
+    }
+
+    @Transactional
+    public void acceptMember(Long somoimId, Long userId) {
+        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
+        applyingMember.acceptMember();
+    }
+
+    @Transactional
+    public void declineMember(Long somoimId, Long userId) {
+        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
+        somoimMemberRepository.delete(applyingMember);
+    }
+
+    private SomoimMember findApplyingMember(Long somoimId, Long userId) {
+        Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException(ResultType.USER_NOT_FOUND));
+        SomoimMember somoimMember = somoimMemberRepository.findBySomoimAndUser(somoim, user).orElseThrow(() -> new GlobalException(ResultType.MEMBER_NOT_FOUND));
+        if (!MemberRole.TEMP.equals(somoimMember.getRole())) {
+            throw new GlobalException(ResultType.NOT_TEMP_MEMBER);
+        }
+        return somoimMember;
     }
 }

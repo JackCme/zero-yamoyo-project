@@ -54,9 +54,22 @@ public class SomoimController {
                 .build();
     }
 
-    @PostMapping("/apply/{somoimId}")
+    @PostMapping("/{somoimId}/apply")
     public ResponseWrapper<Object> apply(@PathVariable("somoimId") Long somoimId) {
-        return null;
+        somoimService.applyToSomoim(somoimId);
+        return ResponseWrapper.builder().build();
+    }
+
+    @PostMapping("/{somoimId}/accept/{userId}")
+    public ResponseWrapper<Object> accept(@PathVariable("somoimId") Long somoimId, @PathVariable("userId") Long userId) {
+        somoimService.acceptMember(somoimId, userId);
+        return ResponseWrapper.builder().build();
+    }
+
+    @PostMapping("/{somoimId}/decline/{userId}")
+    public ResponseWrapper<Object> decline(@PathVariable("somoimId") Long somoimId, @PathVariable("userId") Long userId) {
+        somoimService.declineMember(somoimId, userId);
+        return ResponseWrapper.builder().build();
     }
 
 

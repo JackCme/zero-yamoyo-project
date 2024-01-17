@@ -35,4 +35,18 @@ public class SomoimMember {
         this.appliedAt = appliedAt;
         this.enrolledAt = enrolledAt;
     }
+
+    public static SomoimMember newTempMember(User user, Somoim somoim) {
+        return SomoimMember.builder()
+                .user(user)
+                .somoim(somoim)
+                .role(MemberRole.TEMP)
+                .appliedAt(LocalDateTime.now())
+                .build();
+    }
+
+    public void acceptMember() {
+        this.role = MemberRole.MEMBER;
+        this.enrolledAt = LocalDateTime.now();
+    }
 }
