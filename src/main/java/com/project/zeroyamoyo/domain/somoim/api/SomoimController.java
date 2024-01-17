@@ -52,6 +52,7 @@ public class SomoimController {
     }
 
     @GetMapping("/list")
+    @Operation(summary = "소모임 목록 조회", description = "소모임 목록을 조회합니다")
     public ResponseWrapper<CursorResult<SomoimGetList.Response>> getList(@ParameterObject @ModelAttribute @Valid SomoimGetList.Request request) {
         return ResponseWrapper.<CursorResult<SomoimGetList.Response>>builder()
                 .content(somoimService.getSomoimList(request.getCursorId(), PageRequest.of(0, request.getSize())))
@@ -59,18 +60,21 @@ public class SomoimController {
     }
 
     @PostMapping("/{somoimId}/apply")
+    @Operation(summary = "소모임 가입신청", description = "소모임에 가입을 신청합니다")
     public ResponseWrapper<Object> apply(@PathVariable("somoimId") Long somoimId) {
         somoimService.applyToSomoim(somoimId);
         return ResponseWrapper.builder().build();
     }
 
     @PostMapping("/{somoimId}/accept/{userId}")
+    @Operation(summary = "소모임 가입신청 승인", description = "소모임에 신청된 가입을 승인합니다.(모임장만 가능)")
     public ResponseWrapper<Object> accept(@PathVariable("somoimId") Long somoimId, @PathVariable("userId") Long userId) {
         somoimService.acceptMember(somoimId, userId);
         return ResponseWrapper.builder().build();
     }
 
     @PostMapping("/{somoimId}/decline/{userId}")
+    @Operation(summary = "소모임 가입신청 거절", description = "소모임에 신청된 가입을 거절합니다.(모임장만 가능)")
     public ResponseWrapper<Object> decline(@PathVariable("somoimId") Long somoimId, @PathVariable("userId") Long userId) {
         somoimService.declineMember(somoimId, userId);
         return ResponseWrapper.builder().build();
