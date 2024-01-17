@@ -1,6 +1,7 @@
 package com.project.zeroyamoyo.domain.somoim.service;
 
 import com.project.zeroyamoyo.domain.interest.entity.Interest;
+import com.project.zeroyamoyo.domain.interest.entity.InterestCategory;
 import com.project.zeroyamoyo.domain.interest.repository.InterestRepository;
 import com.project.zeroyamoyo.domain.somoim.api.model.*;
 import com.project.zeroyamoyo.domain.somoim.entity.MemberRole;
@@ -17,6 +18,7 @@ import com.project.zeroyamoyo.global.exception.GlobalException;
 import com.project.zeroyamoyo.global.exception.ResultType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,22 +39,19 @@ public class SomoimService {
 
     @Transactional
     public SomoimCreate.Response create(SomoimCreate.Request request) {
-        Somoim newSomoim = createNewSomoim(request);
-        return new SomoimCreate.Response(newSomoim);
+        return new SomoimCreate.Response(createNewSomoim(request));
     }
 
     public SomoimGet.Response getSomoim(Long somoimId) {
-        Somoim somoim = findSomoim(somoimId);
-        return new SomoimGet.Response(somoim);
+        return new SomoimGet.Response(findSomoim(somoimId));
     }
 
     @Transactional
     public SomoimModify.Response modifySomoim(Long somoimId, SomoimModify.Request request) {
         Somoim somoim = checkCurrentUserIsOwnerOfSomoim(somoimId);
-        Somoim updatedSomoim = somoimRepository.saveAndFlush(
+        return new SomoimModify.Response(somoimRepository.saveAndFlush(
                 somoim.updatedSomoim(request.getName(), request.getRegionCode(), request.getDescription(), request.getLimit())
-        );
-        return new SomoimModify.Response(updatedSomoim);
+        ));
     }
 
     @Transactional
@@ -68,17 +67,17 @@ public class SomoimService {
         ));
     }
 
-    public CursorResult<SomoimGetList.Response> getSomoimList(Long cursorId, Pageable page) {
+    public CursorResult<SomoimGetList.Response> getSomoimList(@Nullable Long cursorId, Pageable page) {
         List<Somoim> somoimList = Optional.ofNullable(cursorId)
                 .map(id -> this.somoimRepository.findByIdLessThanOrderByIdDesc(id, page))
                 .orElseGet(() -> this.somoimRepository.findAllByOrderByIdDesc(page));
         Long lastIdOfList = Optional.of(somoimList.get(somoimList.size() - 1))
                 .map(Somoim::getId)
                 .orElse(null);
-        List<SomoimGetList.Response> collect = somoimList.stream()
+        List<SomoimGetList.Response> responseList = somoimList.stream()
                 .map(SomoimGetList.Response::new)
                 .collect(Collectors.toList());
-        return new CursorResult<>(collect, hasNext(lastIdOfList));
+        return new CursorResult<>(responseList, hasNext(lastIdOfList));
     }
 
     @Transactional
@@ -91,14 +90,12 @@ public class SomoimService {
 
     @Transactional
     public void acceptMember(Long somoimId, Long userId) {
-        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
-        applyingMember.acceptMember();
+        findApplyingMember(somoimId, userId).acceptMember();
     }
 
     @Transactional
     public void declineMember(Long somoimId, Long userId) {
-        SomoimMember applyingMember = findApplyingMember(somoimId, userId);
-        somoimMemberRepository.delete(applyingMember);
+        somoimMemberRepository.delete(findApplyingMember(somoimId, userId));
     }
 
     private Somoim createNewSomoim(SomoimCreate.Request request) {
